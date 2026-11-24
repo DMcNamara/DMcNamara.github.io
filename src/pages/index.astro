@@ -1,0 +1,111 @@
+---
+import Base from '../layouts/Base.astro';
+import { resume, formatDate } from '../lib/resume';
+
+const { basics, interests, projects, work } = resume;
+const current = work[0];
+---
+
+<Base title={`${basics.name} · ${basics.label}`}>
+  <section class="hero">
+    <p class="eyebrow">Hi, I'm</p>
+    <h1>{basics.name}</h1>
+    <p class="label">{basics.label}</p>
+    {basics.summary && <p class="summary">{basics.summary}</p>}
+    <ul class="links">
+      {
+        basics.profiles.map((p) => (
+          <li>
+            <a href={p.url} rel="me noopener">{p.network}</a>
+          </li>
+        ))
+      }
+      <li><a href="/resume">Resume →</a></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Most recently</h2>
+    <p>
+      <strong>{current.position}</strong>, {current.name}
+      <span class="muted">· {formatDate(current.startDate)} – {formatDate(current.endDate)}</span>
+    </p>
+  </section>
+
+  {
+    projects.length > 0 && (
+      <section>
+        <h2 class="eyebrow">Side projects</h2>
+        <ul class="plain">
+          {projects.map((p) => (
+            <li>
+              {p.url ? <a href={p.url}>{p.name}</a> : <strong>{p.name}</strong>} — {p.description}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    interests.length > 0 && (
+      <section>
+        <h2 class="eyebrow">Away from the keyboard</h2>
+        <ul class="plain">
+          {interests.map((i) => (
+            <li>{i.url ? <a href={i.url}>{i.name}</a> : i.name}</li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</Base>
+
+<style>
+  .hero {
+    padding-bottom: 1rem;
+  }
+  h1 {
+    font-size: clamp(2.25rem, 8vw, 3.25rem);
+    margin: 0.25rem 0 0.5rem;
+  }
+  .label {
+    font-family: var(--font-ui);
+    font-size: 1.15rem;
+    color: var(--muted);
+    margin: 0 0 1.5rem;
+  }
+  .summary {
+    font-size: 1.2rem;
+    max-width: 38rem;
+  }
+  .links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+  }
+  .links a {
+    display: inline-block;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    text-decoration: none;
+    background: var(--surface);
+  }
+  .links a:hover {
+    border-color: var(--accent);
+  }
+  section + section {
+    margin-top: 2.5rem;
+  }
+  .plain {
+    padding-left: 1.1rem;
+  }
+  .plain li + li {
+    margin-top: 0.35rem;
+  }
+</style>

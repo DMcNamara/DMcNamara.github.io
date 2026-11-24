@@ -1,0 +1,28 @@
+{
+  "name": "dmcnamara-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "sync:resume": "tsx scripts/sync-resume.ts",
+    "test": "tsx --test scripts/lib/sync.test.ts"
+  },
+  "dependencies": {
+    "astro": "^7.4.13",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@google/genai": "^1.30.0",
+    "@types/node": "^26.0.0",
+    "googleapis": "^166.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}

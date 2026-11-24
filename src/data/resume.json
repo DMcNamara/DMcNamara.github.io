@@ -1,0 +1,128 @@
+{
+  "basics": {
+    "name": "Dan McNamara",
+    "label": "Emmy Award-winning engineering manager and full-stack engineer",
+    "summary": "Engineering leader who still likes getting into the code. I've grown and run remote teams of 15+ across development, DevOps, QA and data science, led platform migrations and AI-driven data ingestion work in community solar, and earlier helped build Emmy Award-winning production software for film and TV.",
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "username": "dan-mcnamara-47a4995a",
+        "url": "https://www.linkedin.com/in/dan-mcnamara-47a4995a"
+      },
+      {
+        "network": "GitHub",
+        "username": "DMcNamara",
+        "url": "https://github.com/DMcNamara"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "Perch Energy",
+      "location": "Remote",
+      "position": "Director of Engineering",
+      "startDate": "2026-02",
+      "endDate": "2026-08",
+      "summary": "Joined via Perch's acquisition of Solstice.",
+      "highlights": [
+        "Led a high-stakes data migration to the Salesforce-based Perch platform under a 6-month deadline, taking a hands-on role writing most of the migration using dbt with AI tooling; navigated significant ambiguity and a lack of existing documentation to reverse-engineer complex data models and business rules and deliver the project on time and under budget.",
+        "Enabled significant consolidation and cost savings."
+      ]
+    },
+    {
+      "name": "Solstice Power Technologies",
+      "location": "Remote",
+      "position": "Director of Engineering",
+      "startDate": "2022-01",
+      "endDate": "2026-02",
+      "highlights": [
+        "Led all of the engineering org, focused on Solstice's web-based platform for community solar enrollment, servicing, invoicing, and analytics; established technical vision and product roadmaps.",
+        "Managed a fully remote team of 15+, including developers, DevOps engineers, QA engineers, data scientists, and occasionally product managers.",
+        "Grew Engineering team from 4 engineers, owning hiring, organization design, and team development with a 98% retention rate.",
+        "Embraced CI/CD architecture: built roadmap to guide team through transition from manual build and QA process to automated testing and deploy, including training and workflow automations.",
+        "Optimized team structure to meet business needs: implemented systems and managed migration to pod structure to prevent emergent work from derailing long term goals.",
+        "Led migration from separate repos to an NX monorepo, reducing code duplication, removing a major source of defects, and improving developer efficiency.",
+        "Prototyped and led development of an automated pricing engine integrated with Salesforce QPC, reducing time to price by 50% and ensuring a consistent margin.",
+        "Introduced AI coding tools and led a hackathon that yielded an LLM-based utility data ingestion system for 15 territories; fully integrated within a month, this increased data accuracy by 40% and reduced projected QC headcount by 10."
+      ]
+    },
+    {
+      "name": "Solstice Power Technologies",
+      "location": "Remote",
+      "position": "Lead Engineer",
+      "startDate": "2020-09",
+      "endDate": "2022-01",
+      "highlights": [
+        "Managed Engineering, Product, and Design teams to deliver high impact features.",
+        "Revamped company OKR process, using a laddering OKR framework to streamline goal-setting.",
+        "Led sprints, managed releases, planned and communicated company objectives to teams.",
+        "Built spec and tech design for operating EnergyScore, an equity-focused ML alternative to FICO. Analyzed compliance needs against FCRA and GLBA regulations and designed API/front-end.",
+        "Rebuilt an agile sprint framework for the engineering team and implemented cross functional sprint review and roadmaps to better convey platform progress to members of other teams.",
+        "Improved security posture: implemented external penetration tests, managed mitigations. Built developer security training including OWASP Standards."
+      ]
+    },
+    {
+      "name": "SyncOnSet Technologies",
+      "location": "Boston, MA",
+      "position": "Principal Engineer",
+      "startDate": "2016-02",
+      "endDate": "2020-09",
+      "highlights": [
+        "Worked with Product Management and other stakeholders to break down specs, make estimates, and negotiate features and timelines.",
+        "Mentored and coached junior engineers, successfully elevating ICs into Tech Lead roles.",
+        "Engineering lead for Asset Hub, a physical asset tracking and management platform for film studios, from inception through launch, and to adoption by many major Hollywood studios.",
+        "Chose technologies (Angular2, TypeScript, Redux, Jasmine, Express) for initial build.",
+        "Led planning, architecture, and development. Managed timelines and deliverables."
+      ]
+    },
+    {
+      "name": "SyncOnSet Technologies",
+      "location": "Boston, MA",
+      "position": "Software Developer",
+      "startDate": "2014-06",
+      "endDate": "2016-02",
+      "highlights": [
+        "Contributed to development of SyncOnSet Crew Tools, an Emmy Award-winning continuity and inventory tracking software suite for film production."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Northeastern University",
+      "location": "Boston, MA",
+      "area": "Computer Engineering",
+      "studyType": "Bachelor of Science",
+      "endDate": "2014-05",
+      "score": "summa cum laude",
+      "courses": ["Minor in Computer Science"]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Turnip Buds",
+      "description": "A React Native/Firebase companion app for Animal Crossing: New Horizons.",
+      "startDate": "2020-04",
+      "url": "https://github.com/DMcNamara/turnipBuds",
+      "keywords": ["React Native", "Firebase", "TypeScript"]
+    }
+  ],
+  "skills": [
+    {
+      "name": "Programming",
+      "keywords": ["TypeScript", "JavaScript", "Node.js", "SQL", "React", "React Native", "Angular", "Jest", "PHP", "Python", "Ruby", "Ruby on Rails", "Redux", "RDBMS (Postgres, etc.)", "Tanstack Query"]
+    },
+    {
+      "name": "Tools",
+      "keywords": ["AWS (EC2, EKS, RDS, S3, etc.)", "CI/CD", "Datadog", "Git", "GitHub Actions", "Jira", "Linear", "Segment", "Stripe"]
+    },
+    {
+      "name": "Management",
+      "keywords": ["Agile", "Budgeting", "Mentorship", "Hiring", "SCRUM Product Owner Trained"]
+    }
+  ],
+  "interests": [
+    { "name": "Cooking" },
+    { "name": "Seeing live music", "url": "https://www.setlist.fm/attended/dmcnamara1" },
+    { "name": "Reading (mostly SciFi, Fantasy, and technical books)" }
+  ]
+}

@@ -1,0 +1,73 @@
+name: Sync resume from Google Doc
+
+on:
+  workflow_dispatch:
+  # Fired by the "Publish to website" menu in the Google Doc (apps-script/publish.gs)
+  repository_dispatch:
+    types: [resume-updated]
+  # Weekly safety net, Mondays 12:17 UTC
+  schedule:
+    - cron: '17 12 * * 1'
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write # for Workload Identity Federation (keyless Google auth)
+
+concurrency:
+  group: sync-resume
+  cancel-in-progress: true
+
+env:
+  RESUME_DOC_ID: 1IjzHuvtFJn3DI-YvHZP4dg0w-32jT_HIil3tOJiO4Ds
+  RESUME_TAB_ID: t.qj0d8cu1kiz
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+
+      # Option A (recommended): keyless. Set repo variables GCP_WIF_PROVIDER and GCP_SERVICE_ACCOUNT.
+      - name: Authenticate to Google (Workload Identity Federation)
+        if: ${{ vars.GCP_WIF_PROVIDER != '' }}
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      # Option B (quick start): a service-account JSON key stored as the GCP_SA_KEY secret.
+      - name: Authenticate to Google (service account key)
+        if: ${{ vars.GCP_WIF_PROVIDER == '' }}
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Sync resume
+        run: npm run sync:resume
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+
+      - name: Run checks on the new data
+        run: npm test
+
+      # Opens or updates a PR only when resume.json changed.
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: sync/resume
+          delete-branch: true
+          add-paths: src/data/resume.json
+          commit-message: 'chore: sync resume from Google Doc'
+          title: 'Resume update from Google Doc'
+          body: |
+            Automated sync from the **Website** tab of the resume doc.
+
+            Review the diff (the LLM did the conversion), then merge to deploy.
+            Triggered by `${{ github.event_name }}`.
