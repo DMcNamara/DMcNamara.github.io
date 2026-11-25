@@ -1,48 +1,61 @@
 ---
 import Base from '../layouts/Base.astro';
 import HeroSlider from '../components/HeroSlider.astro';
-import { resume, formatDate } from '../lib/resume';
+import { resume, formatRange } from '../lib/resume';
 
 const { basics, interests, projects, work } = resume;
+const { summary } = basics;
 const current = work[0];
 ---
 
-<Base title={`${basics.name} · ${basics.label}`}>
-  <HeroSlider slot="hero" />
+<Base title={`${basics.name}, ${basics.label}`}>
+  <HeroSlider slot="hero">
+    <Fragment slot="intro">
+      <h1 class="name">{basics.name}</h1>
+      <p class="label">{basics.label}</p>
+      <ul class="btn-row links">
+        <li><a class="btn btn--tonal" href="/resume">Resume</a></li>
+        {
+          basics.profiles.map((p) => (
+            <li>
+              <a class="btn btn--outlined" href={p.url} rel="me noopener">
+                {p.network}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </Fragment>
+  </HeroSlider>
 
-  <section class="hero">
-    <p class="eyebrow">Hi, I'm</p>
-    <h1>{basics.name}</h1>
-    <p class="label">{basics.label}</p>
-    {basics.summary && <p class="summary">{basics.summary}</p>}
-    <ul class="links">
-      {
-        basics.profiles.map((p) => (
-          <li>
-            <a href={p.url} rel="me noopener">{p.network}</a>
-          </li>
-        ))
-      }
-      <li><a href="/resume">Resume →</a></li>
-    </ul>
-  </section>
+  {
+    summary && (
+      <section class="section">
+        <h2>About</h2>
+        <div class="section-body">
+          <p class="lead">{summary}</p>
+        </div>
+      </section>
+    )
+  }
 
-  <section>
-    <h2 class="eyebrow">Most recently</h2>
-    <p>
-      <strong>{current.position}</strong>, {current.name}
-      <span class="muted">· {formatDate(current.startDate)} – {formatDate(current.endDate)}</span>
-    </p>
+  <section class="section">
+    <h2>Most recently</h2>
+    <div class="section-body">
+      <p class="item-title">{current.position}, {current.name}</p>
+      <p class="item-meta">{formatRange(current.startDate, current.endDate)}</p>
+    </div>
   </section>
 
   {
     projects.length > 0 && (
-      <section>
-        <h2 class="eyebrow">Side projects</h2>
-        <ul class="plain">
+      <section class="section">
+        <h2>Side projects</h2>
+        <ul class="section-body items">
           {projects.map((p) => (
             <li>
-              {p.url ? <a href={p.url}>{p.name}</a> : <strong>{p.name}</strong>} — {p.description}
+              <p class="item-title">{p.url ? <a href={p.url}>{p.name}</a> : p.name}</p>
+              <p class="item-desc">{p.description}</p>
             </li>
           ))}
         </ul>
@@ -52,11 +65,13 @@ const current = work[0];
 
   {
     interests.length > 0 && (
-      <section>
-        <h2 class="eyebrow">Away from the keyboard</h2>
-        <ul class="plain">
+      <section class="section">
+        <h2>Away from the keyboard</h2>
+        <ul class="section-body items">
           {interests.map((i) => (
-            <li>{i.url ? <a href={i.url}>{i.name}</a> : i.name}</li>
+            <li>
+              <p class="item-desc">{i.url ? <a href={i.url}>{i.name}</a> : i.name}</p>
+            </li>
           ))}
         </ul>
       </section>
@@ -65,50 +80,47 @@ const current = work[0];
 </Base>
 
 <style>
-  .hero {
-    padding-bottom: 1rem;
-  }
-  h1 {
-    font-size: clamp(2.25rem, 8vw, 3.25rem);
-    margin: 0.25rem 0 0.5rem;
+  /* Hero intro (rendered inside HeroSlider's intro slot) */
+  .name {
+    font: var(--md-sys-typescale-display-small);
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   .label {
-    font-family: var(--font-ui);
-    font-size: 1.15rem;
-    color: var(--muted);
-    margin: 0 0 1.5rem;
+    margin: var(--space-2) 0 var(--space-6);
+    max-width: 30rem;
+    font: var(--md-sys-typescale-title-medium);
+    font-weight: 400;
+    color: var(--md-sys-color-on-surface-variant);
   }
-  .summary {
-    font-size: 1.2rem;
-    max-width: 38rem;
+
+  /* Sections */
+  p {
+    margin: 0;
   }
-  .links {
-    list-style: none;
+  .lead {
+    font-size: 1.25rem;
+    line-height: 2rem;
+  }
+  .items {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    font-family: var(--font-ui);
-    font-size: 0.95rem;
+    list-style: none;
   }
-  .links a {
-    display: inline-block;
-    padding: 0.4rem 0.85rem;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    text-decoration: none;
-    background: var(--surface);
+  .item-title {
+    font: var(--md-sys-typescale-title-medium);
   }
-  .links a:hover {
-    border-color: var(--accent);
+  .item-meta {
+    margin-top: var(--space-1);
+    font: var(--md-sys-typescale-body-medium);
+    color: var(--md-sys-color-on-surface-variant);
   }
-  section + section {
-    margin-top: 2.5rem;
+  .item-desc {
+    margin-top: var(--space-1);
   }
-  .plain {
-    padding-left: 1.1rem;
-  }
-  .plain li + li {
-    margin-top: 0.35rem;
+  .items li > .item-desc:first-child {
+    margin-top: 0;
   }
 </style>

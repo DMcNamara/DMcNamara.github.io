@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { flatten, findTab } from './docs';
+import { keepExistingSummary } from './merge';
 import { scrubPII, findPII } from '../../src/lib/pii';
 import { resumeSchema } from '../../src/lib/resume-schema';
 
@@ -56,4 +57,21 @@ test('seed resume.json is valid and free of contact details', async () => {
   const raw = JSON.parse(await readFile(new URL('../../src/data/resume.json', import.meta.url), 'utf8'));
   const resume = resumeSchema.parse(raw);
   assert.deepEqual(findPII(resume), []);
+});
+
+test('keepExistingSummary keeps the current summary only when the Doc has none', async () => {
+  const current = resumeSchema.parse(
+    JSON.parse(await readFile(new URL('../../src/data/resume.json', import.meta.url), 'utf8')),
+  );
+  const { summary: _, ...basicsWithout } = current.basics;
+  const fromDocWithout = { ...current, basics: basicsWithout };
+
+  // No summary in the Doc: the existing one is carried over.
+  assert.equal(keepExistingSummary(fromDocWithout, current).basics.summary, current.basics.summary);
+  // A summary in the Doc wins.
+  const fromDocWith = { ...current, basics: { ...current.basics, summary: 'New from the Doc.' } };
+  assert.equal(keepExistingSummary(fromDocWith, current).basics.summary, 'New from the Doc.');
+  // Nothing to carry over: stays absent.
+  assert.equal(keepExistingSummary(fromDocWithout, null).basics.summary, undefined);
+  assert.equal(keepExistingSummary(fromDocWithout, { basics: { summary: '  ' } }).basics.summary, undefined);
 });

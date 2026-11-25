@@ -12,6 +12,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { fetchTabText } from './lib/docs';
 import { extractResume } from './lib/llm';
+import { keepExistingSummary } from './lib/merge';
 import { scrubPII, assertNoPII } from '../src/lib/pii';
 import { resumeSchema } from '../src/lib/resume-schema';
 
@@ -36,8 +37,21 @@ async function main() {
   console.log('Extracting structured resume…');
   const extracted = await extractResume(text);
 
+  const previous = await readFile(OUT, 'utf8').catch(() => '');
+  let previousData: unknown = null;
+  try {
+    previousData = JSON.parse(previous);
+  } catch {
+    // Missing or unreadable file: nothing to carry over.
+  }
+
   // Deterministic scrub after the LLM step, then re-validate and double-check.
-  const resume = resumeSchema.parse(scrubPII(extracted));
+  // The kept summary goes through the same scrub and PII check as the new data.
+  const extractedResume = resumeSchema.parse(scrubPII(extracted));
+  const resume = resumeSchema.parse(scrubPII(keepExistingSummary(extractedResume, previousData)));
+  if (!extractedResume.basics.summary && resume.basics.summary) {
+    console.log('No summary in the Doc; keeping the existing basics.summary.');
+  }
   assertNoPII(resume);
 
   const json = JSON.stringify(resume, null, 2) + '\n';
@@ -46,7 +60,6 @@ async function main() {
     return;
   }
 
-  const previous = await readFile(OUT, 'utf8').catch(() => '');
   if (previous === json) {
     console.log('No changes.');
     return;

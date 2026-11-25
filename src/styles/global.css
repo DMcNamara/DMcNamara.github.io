@@ -1,26 +1,102 @@
+/*
+ * Material 3 tokens for the whole site.
+ *
+ * Color: every role is generated from one seed color (--seed) with oklab mixes, in a
+ * light and a dark scheme. On the home page the hero slider swaps --seed on <html> as
+ * the photo changes, so the page picks up each photo's color. The mix percentages were
+ * contrast-checked against all slide seeds (links ≥ 7:1, secondary text ≥ 6:1, outline ≥ 3:1).
+ *
+ * Type: the M3 type scale, set in two families: Inter for UI roles (display, headline,
+ * title, label) and Source Serif 4 for body. Body Large is customized for the serif
+ * (17/28, no tracking) — serif text wants a little more size and leading than M3's 16/24.
+ */
 :root {
-  --bg: #fbfaf7;
-  --surface: #ffffff;
-  --text: #1d1f22;
-  --muted: #5d6168;
-  --rule: #e4e1da;
-  --accent: #b4532a;
-  --accent-soft: #f6e7df;
-  --measure: 44rem;
-  --font-body: 'Source Serif 4', Georgia, 'Times New Roman', serif;
-  --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --seed: #4f9cf0;
+  --seed-tertiary: #e8b86d;
   color-scheme: light dark;
+
+  /* ---- Color roles: light ---- */
+  --md-sys-color-surface: color-mix(in oklab, var(--seed) 5%, #ffffff);
+  --md-sys-color-surface-container-low: color-mix(in oklab, var(--seed) 8%, #fafafc);
+  --md-sys-color-surface-container: color-mix(in oklab, var(--seed) 11%, #f7f7fa);
+  --md-sys-color-on-surface: color-mix(in oklab, var(--seed) 10%, #1a1b1f);
+  --md-sys-color-on-surface-variant: color-mix(in oklab, var(--seed) 18%, #45474f);
+  --md-sys-color-primary: color-mix(in oklab, var(--seed) 55%, #000000);
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-secondary-container: color-mix(in oklab, var(--seed) 22%, #ffffff);
+  --md-sys-color-on-secondary-container: color-mix(in oklab, var(--seed) 30%, #14151a);
+  --md-sys-color-tertiary-container: color-mix(in oklab, var(--seed-tertiary) 30%, var(--md-sys-color-surface));
+  --md-sys-color-outline: color-mix(in oklab, var(--seed) 15%, #73757d);
+  --md-sys-color-outline-variant: color-mix(in oklab, var(--seed) 15%, #c8c9d1);
+
+  /* ---- Type scale (font shorthand: weight size/line-height family) ---- */
+  --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --md-sys-typescale-display-small: 400 2.25rem/2.75rem var(--font-ui);
+  --md-sys-typescale-headline-small: 500 1.5rem/2rem var(--font-ui);
+  --md-sys-typescale-title-large: 500 1.375rem/1.75rem var(--font-ui);
+  --md-sys-typescale-title-medium: 500 1rem/1.5rem var(--font-ui);
+  --md-sys-typescale-title-small: 500 0.875rem/1.25rem var(--font-ui);
+  --md-sys-typescale-body-large: 400 1.0625rem/1.75rem var(--font-body);
+  --md-sys-typescale-body-medium: 400 0.875rem/1.25rem var(--font-ui);
+  --md-sys-typescale-label-large: 500 0.875rem/1.25rem var(--font-ui);
+  --md-sys-typescale-label-medium: 500 0.75rem/1rem var(--font-ui);
+
+  /* ---- Shape ---- */
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* ---- Motion ---- */
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --md-sys-motion-duration-medium: 400ms;
+  --md-sys-motion-duration-long: 600ms;
+
+  /* ---- Spacing (8dp system, 4dp for fine adjustments) ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ---- Layout ---- */
+  --margin: 16px; /* compact window */
+  --container: 82rem;
+  --measure: 44rem; /* ~75 characters of body text */
+  --rail: 13rem; /* section-heading column on expanded windows */
+  --app-bar: 64px;
+}
+
+/* Medium window and up: 24dp margins */
+@media (min-width: 600px) {
+  :root {
+    --margin: 24px;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #16171a;
-    --surface: #1e2024;
-    --text: #e9e7e2;
-    --muted: #a3a7ae;
-    --rule: #2f3238;
-    --accent: #e8875c;
-    --accent-soft: #3a261d;
+    --md-sys-color-surface: color-mix(in oklab, var(--seed) 8%, #121316);
+    --md-sys-color-surface-container-low: color-mix(in oklab, var(--seed) 11%, #18191c);
+    --md-sys-color-surface-container: color-mix(in oklab, var(--seed) 14%, #1d1e22);
+    --md-sys-color-on-surface: color-mix(in oklab, var(--seed) 6%, #e6e5ea);
+    --md-sys-color-on-surface-variant: color-mix(in oklab, var(--seed) 10%, #c4c5cd);
+    --md-sys-color-primary: color-mix(in oklab, var(--seed) 70%, #ffffff);
+    --md-sys-color-on-primary: color-mix(in oklab, var(--seed) 28%, #0e0f12);
+    --md-sys-color-secondary-container: color-mix(in oklab, var(--seed) 28%, #2b2c31);
+    --md-sys-color-on-secondary-container: color-mix(in oklab, var(--seed) 10%, #eef0f5);
+    /* Kept low so text that crosses the hero's shape stays ≥ 4.5:1 */
+    --md-sys-color-tertiary-container: color-mix(in oklab, var(--seed-tertiary) 22%, var(--md-sys-color-surface));
+    --md-sys-color-outline: color-mix(in oklab, var(--seed) 10%, #8f919a);
+    --md-sys-color-outline-variant: color-mix(in oklab, var(--seed) 12%, #45474f);
   }
 }
 
@@ -36,15 +112,14 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 1.0625rem;
-  line-height: 1.6;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font: var(--md-sys-typescale-body-large);
+  transition: background-color var(--md-sys-motion-duration-long) var(--md-sys-motion-easing-emphasized);
 }
 
 a {
-  color: var(--accent);
+  color: var(--md-sys-color-primary);
   text-underline-offset: 0.18em;
 }
 
@@ -53,51 +128,158 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.wrap {
-  max-width: var(--measure);
-  margin: 0 auto;
-  padding: 0 1rem;
+  outline: 3px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
 }
 
 h1,
 h2,
 h3 {
-  font-family: var(--font-ui);
-  line-height: 1.25;
-  letter-spacing: -0.01em;
+  margin: 0;
+  font-weight: 500;
 }
 
-.eyebrow {
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
+/* One container for every band of the page, so all left edges line up. */
+.page {
+  width: 100%;
+  max-width: calc(var(--container) + 2 * var(--margin));
+  margin-inline: auto;
+  padding-inline: var(--margin);
+}
+
+/*
+ * Section layout: heading above content on compact/medium windows; from expanded
+ * (840dp) the heading moves into a left rail and the content keeps the reading measure.
+ */
+.section {
+  display: grid;
+  gap: var(--space-4);
+}
+.section + .section {
+  margin-top: var(--space-12);
+}
+.section > h2 {
+  font: var(--md-sys-typescale-title-large);
+}
+.section-body {
+  min-width: 0;
+  max-width: var(--measure);
+}
+@media (min-width: 840px) {
+  .section {
+    grid-template-columns: var(--rail) minmax(0, var(--measure));
+    column-gap: var(--space-8);
+  }
+  .section > h2 {
+    position: sticky;
+    top: var(--space-6);
+    align-self: start;
+    /* Optical alignment of the title with the first line of body text */
+    padding-top: var(--space-1);
+  }
 }
 
 .muted {
-  color: var(--muted);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ---- M3 common buttons (40dp tall, 48dp touch target) ---- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0 var(--space-6);
+  border: 0;
+  border-radius: var(--md-sys-shape-corner-full);
+  font: var(--md-sys-typescale-label-large);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-radius var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized);
+}
+/* Extends the hit area to 48dp without changing the visual size */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: -4px 0;
+}
+/* State layer: 8% hover, 10% focus and pressed */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 150ms linear;
+}
+.btn:hover::after {
+  opacity: 0.08;
+}
+.btn:focus-visible::after,
+.btn:active::after {
+  opacity: 0.1;
+}
+.btn:active {
+  border-radius: var(--md-sys-shape-corner-small);
+}
+.btn svg {
+  width: 18px;
+  height: 18px;
+  margin-left: calc(-1 * var(--space-2));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.btn--tonal {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+.btn--outlined {
+  background: transparent;
+  color: var(--md-sys-color-primary);
+  box-shadow: inset 0 0 0 1px var(--md-sys-color-outline);
+}
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .btn {
+    transition: none;
+  }
 }
 
 @media print {
   :root {
-    --bg: #fff;
-    --text: #000;
-    --muted: #444;
-    --accent: #000;
+    --md-sys-color-surface: #fff;
+    --md-sys-color-on-surface: #000;
+    --md-sys-color-on-surface-variant: #444;
+    --md-sys-color-primary: #000;
+    --md-sys-color-outline-variant: #bbb;
   }
   body {
     font-size: 10.5pt;
+    line-height: 1.45;
   }
   .no-print {
     display: none !important;
   }
   a {
     text-decoration: none;
+  }
+  .section > h2 {
+    position: static;
   }
 }

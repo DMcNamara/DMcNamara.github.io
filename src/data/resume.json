@@ -2,7 +2,7 @@
   "basics": {
     "name": "Dan McNamara",
     "label": "Emmy Award-winning engineering manager and full-stack engineer",
-    "summary": "Engineering leader who still likes getting into the code. I've grown and run remote teams of 15+ across development, DevOps, QA and data science, led platform migrations and AI-driven data ingestion work in community solar, and earlier helped build Emmy Award-winning production software for film and TV.",
+    "summary": "Engineering leader and developer who still likes getting into the code. I've grown and run remote teams of 15+ across development, DevOps, QA and data science, led platform migrations and AI-driven data ingestion work in community solar, and earlier helped build Emmy Award-winning production software for film and TV.",
     "profiles": [
       {
         "network": "LinkedIn",
@@ -94,7 +94,9 @@
       "studyType": "Bachelor of Science",
       "endDate": "2014-05",
       "score": "summa cum laude",
-      "courses": ["Minor in Computer Science"]
+      "courses": [
+        "Minor in Computer Science"
+      ]
     }
   ],
   "projects": [
@@ -103,26 +105,69 @@
       "description": "A React Native/Firebase companion app for Animal Crossing: New Horizons.",
       "startDate": "2020-04",
       "url": "https://github.com/DMcNamara/turnipBuds",
-      "keywords": ["React Native", "Firebase", "TypeScript"]
+      "keywords": [
+        "React Native",
+        "Firebase",
+        "TypeScript"
+      ]
     }
   ],
   "skills": [
     {
       "name": "Programming",
-      "keywords": ["TypeScript", "JavaScript", "Node.js", "SQL", "React", "React Native", "Angular", "Jest", "PHP", "Python", "Ruby", "Ruby on Rails", "Redux", "RDBMS (Postgres, etc.)", "Tanstack Query"]
+      "keywords": [
+        "TypeScript",
+        "JavaScript",
+        "Node.js",
+        "SQL",
+        "React",
+        "React Native",
+        "Angular",
+        "Jest",
+        "PHP",
+        "Python",
+        "Ruby",
+        "Ruby on Rails",
+        "Redux",
+        "RDBMS (Postgres, etc.)",
+        "Tanstack Query"
+      ]
     },
     {
       "name": "Tools",
-      "keywords": ["AWS (EC2, EKS, RDS, S3, etc.)", "CI/CD", "Datadog", "Git", "GitHub Actions", "Jira", "Linear", "Segment", "Stripe"]
+      "keywords": [
+        "AWS (EC2, EKS, RDS, S3, etc.)",
+        "CI/CD",
+        "Datadog",
+        "Git",
+        "GitHub Actions",
+        "Jira",
+        "Linear",
+        "Segment",
+        "Stripe"
+      ]
     },
     {
       "name": "Management",
-      "keywords": ["Agile", "Budgeting", "Mentorship", "Hiring", "SCRUM Product Owner Trained"]
+      "keywords": [
+        "Agile",
+        "Budgeting",
+        "Mentorship",
+        "Hiring",
+        "SCRUM Product Owner Trained"
+      ]
     }
   ],
   "interests": [
-    { "name": "Cooking" },
-    { "name": "Seeing live music", "url": "https://www.setlist.fm/attended/dmcnamara1" },
-    { "name": "Reading (mostly SciFi, Fantasy, and technical books)" }
+    {
+      "name": "Cooking"
+    },
+    {
+      "name": "Seeing live music",
+      "url": "https://www.setlist.fm/attended/dmcnamara1"
+    },
+    {
+      "name": "Reading (mostly SciFi, Fantasy, and technical books)"
+    }
   ]
 }

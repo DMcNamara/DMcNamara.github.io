@@ -6,69 +6,77 @@ const { basics, education, skills, projects } = resume;
 const companies = groupByCompany(resume.work);
 ---
 
-<Base title={`Resume · ${basics.name}`}>
+<Base title={`Resume, ${basics.name}`}>
   <header class="head">
     <div>
       <h1>{basics.name}</h1>
       <p class="label">{basics.label}</p>
     </div>
-    <button class="no-print print" type="button" onclick="window.print()">Save as PDF</button>
+    <button class="btn btn--tonal no-print" type="button" onclick="window.print()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" /></svg>
+      Save as PDF
+    </button>
   </header>
 
-  <section>
-    <h2 class="eyebrow">Experience</h2>
-    {
-      companies.map((c) => (
-        <article class="company">
-          <div class="row">
-            <h3>
-              {c.name}
-              {c.location && <span class="muted loc">· {c.location}</span>}
-            </h3>
-            <span class="dates">{formatRange(c.startDate, c.endDate)}</span>
-          </div>
-          {c.roles.map((r) => (
-            <div class="role">
-              {(c.roles.length > 1 || r.position) && (
-                <div class="row">
-                  <p class="position">{r.position}</p>
-                  {c.roles.length > 1 && (
-                    <span class="dates muted">{formatRange(r.startDate, r.endDate)}</span>
-                  )}
-                </div>
-              )}
-              {r.summary && <p class="muted role-summary">{r.summary}</p>}
-              <ul>
-                {r.highlights.map((h) => (
-                  <li>{h}</li>
-                ))}
-              </ul>
+  <section class="section">
+    <h2>Experience</h2>
+    <div class="section-body">
+      {
+        companies.map((c) => (
+          <article class="company">
+            <div class="row">
+              <div>
+                <h3>{c.name}</h3>
+                {c.location && <p class="meta">{c.location}</p>}
+              </div>
+              <p class="meta dates">{formatRange(c.startDate, c.endDate)}</p>
             </div>
-          ))}
-        </article>
-      ))
-    }
+            {c.roles.map((r) => (
+              <div class="role">
+                {(c.roles.length > 1 || r.position) && (
+                  <div class="row">
+                    <p class="position">{r.position}</p>
+                    {c.roles.length > 1 && <p class="meta dates">{formatRange(r.startDate, r.endDate)}</p>}
+                  </div>
+                )}
+                {r.summary && <p class="meta role-summary">{r.summary}</p>}
+                <ul>
+                  {r.highlights.map((h) => (
+                    <li>{h}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </article>
+        ))
+      }
+    </div>
   </section>
 
   {
     projects.length > 0 && (
-      <section>
-        <h2 class="eyebrow">Projects</h2>
-        {projects.map((p) => (
-          <p>
-            {p.url ? <a href={p.url}>{p.name}</a> : <strong>{p.name}</strong>}
-            {p.startDate && <span class="muted"> · {formatDate(p.startDate)}</span>} — {p.description}
-          </p>
-        ))}
+      <section class="section">
+        <h2>Projects</h2>
+        <div class="section-body stack">
+          {projects.map((p) => (
+            <div>
+              <div class="row">
+                <h3>{p.url ? <a href={p.url}>{p.name}</a> : p.name}</h3>
+                {p.startDate && <p class="meta dates">{formatDate(p.startDate)}</p>}
+              </div>
+              <p class="desc">{p.description}</p>
+            </div>
+          ))}
+        </div>
       </section>
     )
   }
 
   {
     skills.length > 0 && (
-      <section>
-        <h2 class="eyebrow">Skills</h2>
-        <dl class="skills">
+      <section class="section">
+        <h2>Skills</h2>
+        <dl class="section-body skills">
           {skills.map((s) => (
             <>
               <dt>{s.name}</dt>
@@ -82,124 +90,125 @@ const companies = groupByCompany(resume.work);
 
   {
     education.length > 0 && (
-      <section>
-        <h2 class="eyebrow">Education</h2>
-        {education.map((e) => (
-          <div class="row">
-            <p>
-              <strong>{e.institution}</strong>
-              <br />
-              {e.studyType} in {e.area}
-              {e.courses?.length ? `, ${e.courses.join(', ')}` : ''}
-              {e.score && <em> ({e.score})</em>}
-            </p>
-            {e.endDate && <span class="dates">{formatDate(e.endDate)}</span>}
-          </div>
-        ))}
+      <section class="section">
+        <h2>Education</h2>
+        <div class="section-body stack">
+          {education.map((e) => (
+            <div class="row">
+              <div>
+                <h3>{e.institution}</h3>
+                <p class="desc">
+                  {e.studyType} in {e.area}
+                  {e.courses?.length ? `, ${e.courses.join(', ')}` : ''}
+                  {e.score && <em> ({e.score})</em>}
+                </p>
+              </div>
+              {e.endDate && <p class="meta dates">{formatDate(e.endDate)}</p>}
+            </div>
+          ))}
+        </div>
       </section>
     )
   }
 </Base>
 
 <style>
+  p {
+    margin: 0;
+  }
   .head {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 2rem;
+    gap: var(--space-4) var(--space-6);
+    margin-bottom: var(--space-12);
   }
   h1 {
-    font-size: clamp(2rem, 7vw, 2.75rem);
-    margin: 0 0 0.25rem;
+    font: var(--md-sys-typescale-display-small);
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   .label {
-    margin: 0;
-    color: var(--muted);
-    font-family: var(--font-ui);
+    margin-top: var(--space-2);
+    font: var(--md-sys-typescale-title-medium);
+    font-weight: 400;
+    color: var(--md-sys-color-on-surface-variant);
   }
-  .print {
-    font: 500 0.9rem var(--font-ui);
-    padding: 0.5rem 0.9rem;
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-    background: var(--surface);
-    color: var(--text);
-    cursor: pointer;
-    white-space: nowrap;
+  /* Title Large section headings (global .section) sit above these Title Medium entries */
+  h3 {
+    font: var(--md-sys-typescale-title-medium);
   }
-  .print:hover {
-    border-color: var(--accent);
-  }
-  section + section {
-    margin-top: 2.5rem;
-  }
-  section > .eyebrow {
-    border-bottom: 1px solid var(--rule);
-    padding-bottom: 0.4rem;
+  .company + .company {
+    margin-top: var(--space-8);
   }
   .company {
-    margin-top: 1.75rem;
     break-inside: avoid-page;
   }
   .row {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    gap: 0.5rem 1rem;
+    gap: var(--space-1) var(--space-4);
     flex-wrap: wrap;
   }
-  h3 {
-    font-size: 1.1rem;
-    margin: 0;
-  }
-  .loc {
-    font-weight: 400;
-    font-size: 0.95rem;
+  .meta {
+    font: var(--md-sys-typescale-body-medium);
+    color: var(--md-sys-color-on-surface-variant);
   }
   .dates {
-    font-family: var(--font-ui);
-    font-size: 0.85rem;
     white-space: nowrap;
+    font-variant-numeric: tabular-nums;
   }
   .role {
-    margin-top: 0.75rem;
+    margin-top: var(--space-3);
   }
   .position {
-    margin: 0;
     font-style: italic;
   }
   .role-summary {
-    margin: 0.25rem 0 0;
-    font-size: 0.95rem;
+    margin-top: var(--space-1);
   }
   ul {
-    margin: 0.4rem 0 0;
-    padding-left: 1.1rem;
+    margin: var(--space-2) 0 0;
+    padding-left: 1.25rem;
   }
   li + li {
-    margin-top: 0.3rem;
+    margin-top: var(--space-1);
+  }
+  .stack {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .desc {
+    margin-top: var(--space-1);
   }
   .skills {
     display: grid;
     grid-template-columns: max-content 1fr;
-    gap: 0.4rem 1rem;
-    margin: 1rem 0 0;
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
   }
   .skills dt {
-    font-family: var(--font-ui);
-    font-weight: 600;
-    font-size: 0.9rem;
+    font: var(--md-sys-typescale-title-small);
+    padding-top: var(--space-1);
   }
   .skills dd {
     margin: 0;
   }
-  @media (max-width: 34rem) {
+  /* Compact windows: stack term over definition */
+  @media (max-width: 599.98px) {
     .skills {
       grid-template-columns: 1fr;
+      row-gap: 0;
     }
-    .skills dd {
-      margin-bottom: 0.5rem;
+    .skills dd + dt {
+      margin-top: var(--space-3);
+    }
+  }
+  @media print {
+    .head {
+      margin-bottom: var(--space-6);
     }
   }
 </style>

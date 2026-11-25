@@ -9,6 +9,8 @@ interface Props {
 
 const { title, description = resume.basics.label } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+// Pages with a hero hide the top app bar until the hero scrolls away (the hero already shows the name)
+const hasHero = Astro.slots.has('hero');
 const nav = [
   { href: '/', label: 'About' },
   { href: '/resume', label: 'Resume' },
@@ -16,7 +18,7 @@ const nav = [
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class:list={{ 'has-hero': hasHero }}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -28,12 +30,14 @@ const nav = [
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap"
     />
+    {/* Mark JS before first paint so the hidden app bar never flashes; without JS it stays a normal header */}
+    {hasHero && <script is:inline>document.documentElement.classList.add('js')</script>}
   </head>
   <body>
-    <header class="site-header no-print">
-      <div class="wrap bar">
+    <header class="app-bar no-print" data-app-bar>
+      <div class="page app-bar-inner">
         <a class="brand" href="/">{resume.basics.name}</a>
         <nav aria-label="Main">
           {
@@ -47,52 +51,117 @@ const nav = [
       </div>
     </header>
     <slot name="hero" />
-    <main class="wrap">
+    {
+      hasHero && (
+        <script>
+          const bar = document.querySelector<HTMLElement>('[data-app-bar]');
+          const hero = document.querySelector<HTMLElement>('[data-hs]');
+          if (bar && hero) {
+            // Reveal once the hero's bottom edge passes under the bar
+            new IntersectionObserver(
+              ([entry]) => bar.classList.toggle('is-revealed', !entry.isIntersecting),
+              { rootMargin: `-${bar.offsetHeight}px 0px 0px 0px` },
+            ).observe(hero);
+          }
+        </script>
+      )
+    }
+    <main class="page">
       <slot />
     </main>
-    <footer class="wrap site-footer no-print">
-      <p class="muted">© {new Date().getFullYear()} {resume.basics.name}</p>
+    <footer class="page no-print">
+      <p class="footer-text">© {new Date().getFullYear()} {resume.basics.name}</p>
     </footer>
   </body>
 </html>
 
 <style>
-  .site-header {
-    border-bottom: 1px solid var(--rule);
+  /* On hero pages the bar floats over the page and stays hidden while the hero is in view.
+     It slides back in on scroll (M3 "on scroll" container color) or when it receives keyboard focus. */
+  :global(.has-hero.js) .app-bar {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    background: var(--md-sys-color-surface-container);
+    transition: transform var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized);
   }
-  .bar {
+  :global(.has-hero.js) .app-bar:not(.is-revealed):not(:focus-within) {
+    transform: translateY(-100%);
+    transition-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.has-hero.js) .app-bar {
+      transition: none;
+    }
+  }
+
+  /* M3 small top app bar: 64dp, on the page surface (no divider) */
+  .app-bar-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    min-height: 3.5rem;
-    font-family: var(--font-ui);
+    gap: var(--space-4);
+    height: var(--app-bar);
   }
   .brand {
-    font-weight: 700;
-    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    font: var(--md-sys-typescale-title-large);
+    color: var(--md-sys-color-on-surface);
     text-decoration: none;
   }
   nav {
     display: flex;
-    gap: 1.25rem;
-    font-size: 0.95rem;
+    gap: var(--space-1);
   }
+  /* Each link is a 48dp target; the 32dp pill behind it is the active indicator */
   nav a {
-    color: var(--muted);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 var(--space-4);
+    font: var(--md-sys-typescale-label-large);
+    color: var(--md-sys-color-on-surface-variant);
     text-decoration: none;
+    isolation: isolate;
   }
-  nav a[aria-current='page'],
-  nav a:hover {
-    color: var(--text);
+  nav a::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: var(--space-2) 0;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 150ms linear;
+  }
+  nav a:hover::before {
+    opacity: 0.08;
+  }
+  nav a:focus-visible::before,
+  nav a:active::before {
+    opacity: 0.1;
+  }
+  nav a[aria-current='page'] {
+    color: var(--md-sys-color-on-secondary-container);
+  }
+  nav a[aria-current='page']::before {
+    background: var(--md-sys-color-secondary-container);
+    opacity: 1;
   }
   main {
-    padding-block: 3rem 4rem;
+    padding-block: var(--space-12) var(--space-16);
   }
-  .site-footer {
-    border-top: 1px solid var(--rule);
-    padding-block: 1.5rem;
-    font-family: var(--font-ui);
-    font-size: 0.85rem;
+  footer {
+    padding-block: var(--space-6);
+  }
+  .footer-text {
+    margin: 0;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    font: var(--md-sys-typescale-body-medium);
+    color: var(--md-sys-color-on-surface-variant);
   }
 </style>
