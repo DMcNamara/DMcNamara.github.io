@@ -1,0 +1,722 @@
+---
+/**
+ * Hero carousel following Material 3:
+ * - M3 "hero" carousel layout: one large item plus a peek of the next, 8dp gap,
+ *   extra-large (28dp) corners. Items change size by masking: the photo stays put
+ *   while its container grows or shrinks around it.
+ * - M3 motion tokens (emphasized easing, long durations), tonal icon buttons with
+ *   state layers, and a per-photo color scheme generated from a seed color.
+ * - Extra motion: staggered colorful display word, a rotating M3 Expressive "cookie"
+ *   shape, pointer + scroll parallax by layer depth (--d), slow zoom on the hero photo.
+ * - Autoplay with a pause button; pauses on keyboard focus and hidden tabs.
+ *   Swipe, arrow keys, prev/next. prefers-reduced-motion: no autoplay or parallax.
+ */
+import { getImage } from 'astro:assets';
+import sunglasses from '../assets/hero/sunglasses.jpg';
+import suit from '../assets/hero/suit.jpg';
+import cedar from '../assets/hero/cedar-tunnel.jpg';
+import spiral from '../assets/hero/spiral.jpg';
+import friar from '../assets/hero/friar.jpg';
+
+// Draft copy: edit freely. `seed` drives the color scheme, `tertiary` is the accent
+// shape, `focus` is the object-position that keeps the face in frame.
+const slides = [
+  { img: sunglasses, focus: '55% 28%', seed: '#4f9cf0', tertiary: '#e8b86d', word: 'LEAD', title: 'Director of Engineering', blurb: 'Grew a remote team from 4 engineers to 15+ with 98% retention.', alt: 'Dan in sunglasses and a floral shirt under a bright blue sky' },
+  { img: suit, focus: '52% 22%', seed: '#e0566f', tertiary: '#f59e4c', word: 'SHIP', title: 'Emmy Award-winning software', blurb: 'Helped build production tools used across film and TV.', alt: 'Dan in a burgundy double-breasted suit with a floral boutonniere' },
+  { img: cedar, focus: '58% 34%', seed: '#9bc53d', tertiary: '#e07a45', word: 'BUILD', title: 'Full-stack engineer', blurb: 'TypeScript, React, Node, Postgres, and the CI/CD to ship them.', alt: 'Dan in a floral puffer jacket under a tunnel of cedar trees' },
+  { img: spiral, focus: '80% 30%', seed: '#ef5b47', tertiary: '#93a5ff', word: 'LOOP', title: 'Systems thinker', blurb: 'Monorepos, pipelines, and the occasional rabbit hole.', alt: 'Dan in a paisley shirt beside a spiraling stone sculpture' },
+  { img: friar, focus: '50% 30%', seed: '#ff4d6d', tertiary: '#5cd3ff', word: 'LISTEN', title: 'Live music, often', blurb: 'If there is a show this week, I am probably at it.', alt: 'Dan mimicking the praying pose of a friar statue in a bar' },
+];
+
+const prepared = await Promise.all(
+  slides.map(async (s) => ({
+    ...s,
+    photo: await getImage({ src: s.img, width: 1200, format: 'webp', quality: 78 }),
+  })),
+);
+const n = prepared.length;
+const schemes = prepared.map((s) => ({ seed: s.seed, tertiary: s.tertiary }));
+const cookie =
+  'M197 100L195 107L191 113L186 118L181 123L178 128L177 134L178 141L178 149L177 156L174 162L169 166L162 168L154 169L147 170L142 172L137 176L133 181L128 188L123 193L117 196L110 195L103 192L97 188L91 184L86 182L80 182L73 184L65 185L58 186L52 184L47 179L43 173L41 165L39 159L36 153L32 150L26 147L19 143L13 139L9 133L8 126L10 119L13 112L16 106L17 100L16 94L13 88L10 81L8 74L9 67L13 61L19 57L26 53L32 50L36 47L39 41L41 35L43 27L47 21L51 16L58 14L65 15L73 16L80 18L86 18L91 16L97 12L103 8L110 5L117 4L123 7L128 12L133 19L137 24L142 28L147 30L154 31L162 32L169 34L174 38L177 44L178 51L178 59L177 66L178 72L181 77L186 82L191 87L195 93Z';
+---
+
+<section
+  class="hs"
+  data-hs
+  data-dir="next"
+  data-schemes={JSON.stringify(schemes)}
+  aria-roledescription="carousel"
+  aria-label="Photos of Dan"
+  style={`--seed:${prepared[0].seed};--tertiary:${prepared[0].tertiary};--dur:6.5s`}
+>
+  <div class="hs-shape hs-layer" style="--d:0.7" aria-hidden="true">
+    <svg viewBox="0 0 200 200"><path d={cookie}></path></svg>
+  </div>
+
+  <div class="hs-inner">
+    <div class="hs-carousel hs-layer" style="--d:0.15">
+      <div class="hs-track">
+        {
+          prepared.map((s, i) => (
+            <figure
+              class:list={['hs-item', { 'is-hero': i === 0, 'is-peek': i === 1 }]}
+              data-i={i}
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${i + 1} of ${n}`}
+              aria-hidden={i === 0 ? undefined : 'true'}
+            >
+              <img src={s.photo.src} alt={s.alt} style={`object-position:${s.focus}`} loading={i < 2 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} decoding="async" />
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="hs-text">
+      <div class="hs-words hs-layer" style="--d:0.35" aria-hidden="true">
+        {
+          prepared.map((s, i) => (
+            <p class:list={['hs-word', { 'is-active': i === 0 }]} data-i={i}>
+              {[...s.word].map((ch, j) => <span style={`--i:${j}`}>{ch}</span>)}
+            </p>
+          ))
+        }
+      </div>
+
+      <div class="hs-copy">
+        {
+          prepared.map((s, i) => (
+            <div class:list={['hs-caption', { 'is-active': i === 0 }]} data-i={i} aria-hidden={i === 0 ? undefined : 'true'}>
+              <h2 class="hs-title">{s.title}</h2>
+              <p class="hs-blurb">{s.blurb}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="hs-controls">
+        <button class="hs-icon-btn" type="button" data-prev aria-label="Previous photo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+        </button>
+        <button class="hs-icon-btn" type="button" data-next aria-label="Next photo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+        </button>
+        <ol class="hs-progress" aria-label="Choose a photo">
+          {
+            prepared.map((s, i) => (
+              <li>
+                <button type="button" data-go={i} aria-label={`Show photo ${i + 1}: ${s.word.toLowerCase()}`} aria-current={i === 0 ? 'true' : undefined}>
+                  <span class:list={['hs-fill', { 'is-active': i === 0 }]} />
+                </button>
+              </li>
+            ))
+          }
+        </ol>
+        <button class="hs-icon-btn hs-icon-btn--filled" type="button" data-toggle aria-label="Pause slideshow" aria-pressed="false">
+          <svg class="hs-icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" /></svg>
+          <svg class="hs-icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5l11 6.5-11 6.5z" /></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <p class="hs-sr" aria-live="off" data-live></p>
+</section>
+
+<style>
+  .hs {
+    /* M3 motion tokens */
+    --md-emphasized: cubic-bezier(0.2, 0, 0, 1);
+    --md-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+    --md-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+    --md-long: 600ms;
+    --md-medium: 400ms;
+
+    /* Color scheme from the seed (dark theme roles) */
+    --primary: color-mix(in oklab, var(--seed) 78%, white);
+    --on-primary: color-mix(in oklab, var(--seed) 22%, #0b0b0d);
+    --secondary-container: color-mix(in oklab, var(--seed) 24%, #24252a);
+    --on-secondary-container: color-mix(in oklab, var(--seed) 12%, #eef0f5);
+    --surface: color-mix(in oklab, var(--seed) 10%, #111215);
+    --surface-container: color-mix(in oklab, var(--seed) 16%, #1b1c20);
+    --on-surface: #e9e7ec;
+    --on-surface-variant: color-mix(in oklab, var(--seed) 8%, #c5c4cc);
+
+    --gap: 8px; /* M3 carousel item spacing */
+    --radius: 28px; /* M3 extra-large shape */
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    height: clamp(580px, 100svh, 900px);
+    background: var(--surface);
+    color: var(--on-surface);
+    font-family: var(--font-ui, 'Inter', system-ui, sans-serif);
+    touch-action: pan-y;
+    transition: background-color var(--md-long) var(--md-emphasized);
+  }
+
+  .hs,
+  .hs *,
+  .hs *::before,
+  .hs *::after {
+    box-sizing: border-box;
+  }
+
+  /* Parallax: JS sets --px/--py (pointer, -1..1) and --sp (scroll, 0..1); each layer scales by its --d. */
+  .hs-layer {
+    transform: translate3d(
+      calc(var(--px, 0) * var(--d) * 34px),
+      calc(var(--py, 0) * var(--d) * 26px + var(--sp, 0) * var(--d) * 220px),
+      0
+    );
+    will-change: transform;
+  }
+
+  /* M3 Expressive cookie shape behind the carousel */
+  .hs-shape {
+    position: absolute;
+    z-index: -1;
+    top: -16%;
+    left: 24%;
+    width: min(44vw, 660px);
+    aspect-ratio: 1;
+  }
+  .hs-shape svg {
+    width: 100%;
+    height: 100%;
+    fill: color-mix(in oklab, var(--tertiary) 75%, var(--surface));
+    animation: hs-spin 60s linear infinite;
+    transition: fill var(--md-long) var(--md-emphasized);
+  }
+  @keyframes hs-spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  .hs-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
+    height: 100%;
+    max-width: 82rem;
+    margin: 0 auto;
+    padding: clamp(1rem, 4vh, 2.5rem) 1rem;
+  }
+
+  /* ---------- M3 hero carousel ---------- */
+  .hs-carousel {
+    container-type: inline-size;
+    height: 100%;
+    min-height: 0;
+  }
+  .hs-track {
+    --peek: clamp(40px, 12cqw, 104px);
+    display: flex;
+    height: 100%;
+  }
+  .hs-item {
+    position: relative;
+    order: 3;
+    flex: 0 0 0;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--surface-container);
+    transition:
+      flex-basis var(--md-long) var(--md-emphasized),
+      margin var(--md-long) var(--md-emphasized);
+  }
+  .hs-item.is-leaving {
+    order: 0;
+  }
+  .hs-item.is-hero {
+    order: 1;
+    flex-basis: calc(100% - var(--peek) - var(--gap));
+  }
+  .hs-item.is-peek {
+    order: 2;
+    flex-basis: var(--peek);
+    margin-left: var(--gap);
+    cursor: pointer;
+  }
+  /* Masking: the photo is always hero-sized and centered, so it holds still while the item resizes */
+  .hs-item img {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: calc(100cqw - var(--peek) - var(--gap));
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    translate: -50% 0;
+    scale: 1.08;
+  }
+  .hs-item.is-hero img {
+    animation: hs-zoom calc(var(--dur) + 1.5s) linear forwards;
+  }
+  .hs-item.is-peek img {
+    filter: saturate(0.7) brightness(0.8);
+  }
+  @keyframes hs-zoom {
+    from {
+      scale: 1.08;
+    }
+    to {
+      scale: 1;
+    }
+  }
+
+  /* ---------- Text column ---------- */
+  .hs-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-width: 0;
+    padding-bottom: 0.25rem;
+  }
+  .hs-words {
+    display: grid;
+    margin-bottom: 1.5rem;
+  }
+  .hs-word {
+    grid-area: 1 / 1;
+    margin: 0;
+    padding-block: 0.06em;
+    font-size: clamp(4rem, 9.5vw, 10rem);
+    font-weight: 900;
+    line-height: 0.8;
+    letter-spacing: -0.05em;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--primary);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .hs-word span {
+    display: inline-block;
+    transform: translateY(150%) rotate(8deg);
+    transition: transform var(--md-long) var(--md-emphasized-accelerate);
+    transition-delay: calc(var(--i) * 35ms);
+  }
+  .hs-word.is-active span {
+    transform: none;
+    transition: transform 700ms var(--md-emphasized-decelerate), color var(--md-medium);
+    transition-delay: calc(200ms + var(--i) * 60ms);
+  }
+  .hs-word.is-active span:nth-child(odd) {
+    color: var(--primary);
+    -webkit-text-stroke-color: transparent;
+  }
+  .hs-word.is-leaving span {
+    transform: translateY(-150%) rotate(-8deg);
+  }
+  /* Snap back to the start position after leaving, instead of sweeping through view */
+  .hs-word:not(.is-active):not(.is-leaving) span {
+    transition: none;
+  }
+
+  .hs-copy {
+    display: grid;
+  }
+  .hs-caption {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 200ms linear,
+      transform var(--md-medium) var(--md-emphasized-accelerate);
+  }
+  .hs-caption.is-active {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--md-medium) linear 300ms,
+      transform var(--md-long) var(--md-emphasized-decelerate) 300ms;
+  }
+  /* M3 headline-medium / body-large */
+  .hs-title {
+    margin: 0;
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .hs-blurb {
+    margin: 0.5rem 0 0;
+    max-width: 30rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: var(--on-surface-variant);
+  }
+
+  /* ---------- Controls: M3 icon buttons + linear progress ---------- */
+  .hs-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+  .hs-icon-btn {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      background-color var(--md-long) var(--md-emphasized),
+      border-radius var(--md-medium) var(--md-emphasized);
+  }
+  .hs-icon-btn--filled {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+  /* M3 state layer: 8% hover, 10% focus/pressed */
+  .hs-icon-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 150ms linear;
+  }
+  .hs-icon-btn:hover::after {
+    opacity: 0.08;
+  }
+  .hs-icon-btn:focus-visible::after,
+  .hs-icon-btn:active::after {
+    opacity: 0.1;
+  }
+  /* M3 Expressive: pressed buttons morph toward a squircle */
+  .hs-icon-btn:active {
+    border-radius: 14px;
+  }
+  .hs-icon-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .hs-icon-play,
+  .is-paused-user .hs-icon-pause {
+    display: none;
+  }
+  .is-paused-user .hs-icon-play {
+    display: block;
+    fill: currentColor;
+  }
+
+  .hs-progress {
+    flex: 1;
+    display: flex;
+    gap: 4px;
+    margin: 0 0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+  .hs-progress li {
+    flex: 1;
+  }
+  .hs-progress button {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .hs-progress button::before,
+  .hs-fill {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 4px;
+    margin-top: -2px;
+    border-radius: 2px;
+    background: var(--secondary-container);
+    transition: background-color var(--md-long) var(--md-emphasized);
+  }
+  .hs-fill {
+    background: var(--primary);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  .hs-fill.is-active {
+    animation: hs-progress var(--dur) linear forwards;
+  }
+  .is-paused .hs-fill.is-active,
+  .is-paused .hs-item.is-hero img {
+    animation-play-state: paused;
+  }
+  @keyframes hs-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* M3 focus indicator */
+  .hs :focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+  }
+  .hs-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---------- Phones: carousel on top, text below ---------- */
+  @media (max-width: 46rem) {
+    .hs {
+      height: auto;
+    }
+    .hs-inner {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 1rem 1rem 1.25rem;
+    }
+    .hs-carousel {
+      height: min(62svh, 560px);
+    }
+    .hs-track {
+      --peek: 40px;
+    }
+    .hs-shape {
+      top: -6%;
+      left: 35%;
+      width: 95vw;
+    }
+    .hs-words {
+      margin-bottom: 1rem;
+    }
+    .hs-word {
+      font-size: 19vw;
+    }
+    .hs-title {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+    .hs-controls {
+      margin-top: 1.25rem;
+      gap: 0.25rem;
+    }
+    .hs-progress {
+      margin: 0 0.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hs-layer {
+      transform: none;
+    }
+    .hs-shape svg {
+      animation: none;
+    }
+    .hs-item {
+      transition: none;
+    }
+    .hs-item.is-hero img {
+      animation: none;
+      scale: 1;
+    }
+    .hs-word span,
+    .hs-word.is-active span,
+    .hs-word.is-leaving span {
+      transform: none;
+      transition: none;
+    }
+    .hs-word {
+      opacity: 0;
+      transition: opacity 200ms linear;
+    }
+    .hs-word.is-active {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  type Scheme = { seed: string; tertiary: string };
+
+  function initHeroSlider(root: HTMLElement) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const schemes = JSON.parse(root.dataset.schemes ?? '[]') as Scheme[];
+    const count = schemes.length;
+    const items = [...root.querySelectorAll<HTMLElement>('.hs-item')];
+    const texts = [...root.querySelectorAll<HTMLElement>('.hs-word, .hs-caption')];
+    const words = [...root.querySelectorAll('.hs-word')].map((w) => w.textContent ?? '');
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-go]')];
+    const live = root.querySelector<HTMLElement>('[data-live]')!;
+    const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]')!;
+
+    let current = 0;
+    let leaveTimer = 0;
+    const paused = { user: reduce, focus: false, hidden: false };
+
+    const restart = (el: Element, cls: string) => {
+      el.classList.remove(cls);
+      void (el as HTMLElement).offsetWidth; // reflow so the animation replays
+      el.classList.add(cls);
+    };
+
+    function go(next: number, dir: 'next' | 'prev') {
+      const prev = current;
+      current = (next + count) % count;
+      if (current === prev) return;
+      const peek = (current + 1) % count;
+      root.dataset.dir = dir;
+      root.style.setProperty('--seed', schemes[current].seed);
+      root.style.setProperty('--tertiary', schemes[current].tertiary);
+
+      // Carousel: hero + peek; the outgoing hero shrinks away to the left when moving forward
+      for (const el of items) {
+        const i = Number(el.dataset.i);
+        el.classList.toggle('is-hero', i === current);
+        el.classList.toggle('is-peek', i === peek);
+        el.classList.toggle('is-leaving', dir === 'next' && i === prev && i !== peek);
+        if (i === current) el.removeAttribute('aria-hidden');
+        else el.setAttribute('aria-hidden', 'true');
+      }
+      for (const el of texts) {
+        const i = Number(el.dataset.i);
+        el.classList.toggle('is-active', i === current);
+        el.classList.toggle('is-leaving', i === prev);
+        if (el.classList.contains('hs-caption')) {
+          if (i === current) el.removeAttribute('aria-hidden');
+          else el.setAttribute('aria-hidden', 'true');
+        }
+      }
+      clearTimeout(leaveTimer);
+      leaveTimer = window.setTimeout(() => {
+        root.querySelectorAll('.is-leaving').forEach((el) => el.classList.remove('is-leaving'));
+      }, 700);
+
+      dots.forEach((d, i) => {
+        d.removeAttribute('aria-current');
+        if (i === current) d.setAttribute('aria-current', 'true');
+        const fill = d.querySelector('.hs-fill')!;
+        fill.classList.remove('is-active');
+        if (i === current) restart(fill, 'is-active');
+      });
+      live.textContent = `Photo ${current + 1} of ${count}: ${words[current]}`;
+    }
+
+    function syncPaused() {
+      const isPaused = Object.values(paused).some(Boolean);
+      root.classList.toggle('is-paused', isPaused);
+      root.classList.toggle('is-paused-user', paused.user);
+      toggle.setAttribute('aria-pressed', String(paused.user));
+      toggle.setAttribute('aria-label', paused.user ? 'Play slideshow' : 'Pause slideshow');
+      live.setAttribute('aria-live', isPaused ? 'polite' : 'off');
+    }
+
+    // Autoplay is driven by the progress bar: when it fills, advance.
+    root.addEventListener('animationend', (e) => {
+      if ((e.target as Element).classList.contains('hs-fill')) go(current + 1, 'next');
+    });
+
+    root.querySelector('[data-next]')!.addEventListener('click', () => go(current + 1, 'next'));
+    root.querySelector('[data-prev]')!.addEventListener('click', () => go(current - 1, 'prev'));
+    dots.forEach((d, i) => d.addEventListener('click', () => go(i, i < current ? 'prev' : 'next')));
+    items.forEach((el) =>
+      el.addEventListener('click', () => {
+        if (el.classList.contains('is-peek')) go(current + 1, 'next');
+      }),
+    );
+    toggle.addEventListener('click', () => {
+      paused.user = !paused.user;
+      syncPaused();
+    });
+
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') go(current + 1, 'next');
+      if (e.key === 'ArrowLeft') go(current - 1, 'prev');
+    });
+    root.addEventListener('focusin', () => {
+      paused.focus = root.matches(':focus-within:has(:focus-visible)');
+      syncPaused();
+    });
+    root.addEventListener('focusout', (e) => {
+      if (!root.contains(e.relatedTarget as Node)) {
+        paused.focus = false;
+        syncPaused();
+      }
+    });
+    document.addEventListener('visibilitychange', () => {
+      paused.hidden = document.hidden;
+      syncPaused();
+    });
+
+    // Swipe (touch/pen)
+    let startX = 0;
+    let startY = 0;
+    root.addEventListener('pointerdown', (e) => {
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+    root.addEventListener('pointerup', (e) => {
+      if (e.pointerType === 'mouse') return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(e.clientY - startY)) {
+        go(current + (dx < 0 ? 1 : -1), dx < 0 ? 'next' : 'prev');
+      }
+    });
+
+    // Parallax: smoothed pointer + scroll, only while visible
+    const target = { x: 0, y: 0 };
+    const pos = { x: 0, y: 0 };
+    let visible = true;
+    let raf = 0;
+    root.addEventListener('pointerleave', () => {
+      target.x = target.y = 0;
+    });
+    if (!reduce) {
+      root.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        const r = root.getBoundingClientRect();
+        target.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+        target.y = ((e.clientY - r.top) / r.height) * 2 - 1;
+      });
+      new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible && !raf) raf = requestAnimationFrame(tick);
+      }).observe(root);
+      raf = requestAnimationFrame(tick);
+    }
+    function tick() {
+      pos.x += (target.x - pos.x) * 0.08;
+      pos.y += (target.y - pos.y) * 0.08;
+      const sp = Math.min(Math.max(window.scrollY / root.offsetHeight, 0), 1);
+      root.style.setProperty('--px', pos.x.toFixed(4));
+      root.style.setProperty('--py', pos.y.toFixed(4));
+      root.style.setProperty('--sp', sp.toFixed(4));
+      raf = visible ? requestAnimationFrame(tick) : 0;
+    }
+
+    syncPaused();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-hs]').forEach(initHeroSlider);
+</script>

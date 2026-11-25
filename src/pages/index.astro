@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import HeroSlider from '../components/HeroSlider.astro';
 import { resume, formatDate } from '../lib/resume';
 
 const { basics, interests, projects, work } = resume;
@@ -7,6 +8,8 @@ const current = work[0];
 ---
 
 <Base title={`${basics.name} · ${basics.label}`}>
+  <HeroSlider slot="hero" />
+
   <section class="hero">
     <p class="eyebrow">Hi, I'm</p>
     <h1>{basics.name}</h1>
