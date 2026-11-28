@@ -6,13 +6,7 @@
     "profiles": [
       {
         "network": "LinkedIn",
-        "username": "dan-mcnamara-47a4995a",
-        "url": "https://www.linkedin.com/in/dan-mcnamara-47a4995a"
-      },
-      {
-        "network": "GitHub",
-        "username": "DMcNamara",
-        "url": "https://github.com/DMcNamara"
+        "url": "http://linkedin.com/in/dan-mcnamara-47a4995a"
       }
     ]
   },
@@ -23,10 +17,9 @@
       "position": "Director of Engineering",
       "startDate": "2026-02",
       "endDate": "2026-08",
-      "summary": "Joined via Perch's acquisition of Solstice.",
+      "summary": "via acquisition of Solstice",
       "highlights": [
-        "Led a high-stakes data migration to the Salesforce-based Perch platform under a 6-month deadline, taking a hands-on role writing most of the migration using dbt with AI tooling; navigated significant ambiguity and a lack of existing documentation to reverse-engineer complex data models and business rules and deliver the project on time and under budget.",
-        "Enabled significant consolidation and cost savings."
+        "Led a high-stakes data migration to the Salesforce-based Perch platform under a 6-month deadline, taking a hands-on role writing most of the migration using dbt with AI tooling; navigated significant ambiguity and a lack of existing documentation to reverse-engineer complex data models and business rules and deliver the project on time and under budget. Enabled significant consolidation and cost savings."
       ]
     },
     {
@@ -37,12 +30,11 @@
       "endDate": "2026-02",
       "highlights": [
         "Led all of the engineering org, focused on Solstice's web-based platform for community solar enrollment, servicing, invoicing, and analytics; established technical vision and product roadmaps.",
-        "Managed a fully remote team of 15+, including developers, DevOps engineers, QA engineers, data scientists, and occasionally product managers.",
-        "Grew Engineering team from 4 engineers, owning hiring, organization design, and team development with a 98% retention rate.",
-        "Embraced CI/CD architecture: built roadmap to guide team through transition from manual build and QA process to automated testing and deploy, including training and workflow automations.",
-        "Optimized team structure to meet business needs: implemented systems and managed migration to pod structure to prevent emergent work from derailing long term goals.",
+        "Managed a fully remote team of 15+, including developers, DevOps engineers, QA engineers, data scientists, and occasionally product managers. Grew Engineering team from 4 engineers, owning hiring, organization design, and team development with a 98% retention rate.",
+        "Embraced CI/CD architecture: Built roadmap to guide team through transition from manual build and QA process to automated testing and deploy, including training and workflow automations.",
+        "Optimized team structure to meet business needs: Implemented systems and managed migration to pod structure to prevent emergent work from derailing long term goals.",
         "Led migration from separate repos to an NX monorepo, reducing code duplication, removing a major source of defects, and improving developer efficiency.",
-        "Prototyped and led development of an automated pricing engine integrated with Salesforce QPC, reducing time to price by 50% and ensuring a consistent margin.",
+        "Prototyped and led development of an automated pricing engine integrated with Salesforce QPC reducing time to price by 50% and ensuring a consistent margin.",
         "Introduced AI coding tools and led a hackathon that yielded an LLM-based utility data ingestion system for 15 territories; fully integrated within a month, this increased data accuracy by 40% and reduced projected QC headcount by 10."
       ]
     },
@@ -82,7 +74,7 @@
       "startDate": "2014-06",
       "endDate": "2016-02",
       "highlights": [
-        "Contributed to development of SyncOnSet Crew Tools, an Emmy Award-winning continuity and inventory tracking software suite for film production."
+        "Contributed to development of SyncOnSet Crew Tools, an Emmy-Award winning continuity and inventory tracking software suite for film production."
       ]
     }
   ],
@@ -104,12 +96,7 @@
       "name": "Turnip Buds",
       "description": "A React Native/Firebase companion app for Animal Crossing: New Horizons.",
       "startDate": "2020-04",
-      "url": "https://github.com/DMcNamara/turnipBuds",
-      "keywords": [
-        "React Native",
-        "Firebase",
-        "TypeScript"
-      ]
+      "url": "https://github.com/DMcNamara/turnipBuds"
     }
   ],
   "skills": [
@@ -129,14 +116,14 @@
         "Ruby",
         "Ruby on Rails",
         "Redux",
-        "RDBMS (Postgres, etc.)",
+        "RDBMS (Postgres, etc)",
         "Tanstack Query"
       ]
     },
     {
       "name": "Tools",
       "keywords": [
-        "AWS (EC2, EKS, RDS, S3, etc.)",
+        "AWS (EC2, EKS, RDS, S3, etc)",
         "CI/CD",
         "Datadog",
         "Git",
@@ -163,11 +150,11 @@
       "name": "Cooking"
     },
     {
-      "name": "Seeing live music",
+      "name": "seeing live music",
       "url": "https://www.setlist.fm/attended/dmcnamara1"
     },
     {
-      "name": "Reading (mostly SciFi, Fantasy, and technical books)"
+      "name": "reading (mostly SciFi, Fantasy, and technical books)"
     }
   ]
 }
