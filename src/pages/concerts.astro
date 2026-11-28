@@ -1,0 +1,533 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { concerts, photoFor, monogram, groupShows, ranks, formatLong, formatMonth, formatDay, year } from '../lib/concerts';
+
+const { stats, topSeen, recent, updatedAt } = concerts;
+const max = topSeen[0]?.count ?? 1;
+const rank = ranks(topSeen.map((a) => a.count));
+const tied = rank.map((r) => rank.filter((x) => x === r).length > 1);
+// Artists tied for the top count get the large tiles (at most two, so the grid stays even).
+const featured = topSeen.filter((a) => a.count === max).length >= 2 ? 2 : 1;
+const shows = groupShows(recent);
+const span = (a: string, b: string) => (year(a) === year(b) ? year(a) : `${year(a)}–${year(b)}`);
+---
+
+<Base title="Shows, Dan McNamara" description="The bands I've seen most, and the ones I've seen lately.">
+  <header class="head">
+    <h1>Shows</h1>
+    <p class="stats">
+      <span><strong>{stats.shows}</strong> shows</span>
+      <span><strong>{stats.artists}</strong> artists</span>
+      <span><strong>{stats.venues}</strong> venues</span>
+      <span>since <strong>{year(stats.since)}</strong></span>
+    </p>
+  </header>
+
+  <section class="block" aria-labelledby="recent-h">
+    <h2 id="recent-h">Recently seen</h2>
+    <ol class="tickets">
+      {
+        shows.map((s) => (
+          <li class="ticket">
+            <time class="stub" datetime={s.date} title={formatLong(s.date)}>
+              <span class="stub-month">{formatMonth(s.date)}</span>
+              <span class="stub-day">{formatDay(s.date)}</span>
+              <span class="stub-year">{year(s.date)}</span>
+            </time>
+            <div class="ticket-body">
+              <p class="venue">{s.city ? `${s.venue}, ${s.city}` : s.venue}</p>
+              <ul class="acts">
+                {s.artists.map((a) => {
+                  const photo = photoFor(a.image);
+                  return (
+                    <li class="act">
+                      <span class="act-photo" style={a.color ? `--tile-bg:${a.color}` : undefined}>
+                        {photo ? (
+                          <Image src={photo} alt="" widths={[96, 192]} sizes="56px" />
+                        ) : (
+                          <span aria-hidden="true">{monogram(a.name)}</span>
+                        )}
+                      </span>
+                      <span class="act-text">
+                        <a class="act-name" href={a.showUrl} rel="noopener">
+                          {a.name}
+                        </a>
+                        {a.tour && <span class="act-tour">{a.tour}</span>}
+                      </span>
+                      {a.deezerUrl && (
+                        <a
+                          class="act-listen"
+                          href={a.deezerUrl}
+                          rel="noopener"
+                          aria-label={`Open ${a.name} on Deezer`}
+                          title="Open on Deezer"
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+                          </svg>
+                        </a>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="block" aria-labelledby="top-h">
+    <h2 id="top-h">Most seen</h2>
+    <ol class="top">
+      {
+        topSeen.map((a, i) => {
+          const photo = photoFor(a.image);
+          const big = i < featured;
+          return (
+            <li class:list={['tile', { 'tile--big': big }]} style={a.color ? `--tile-bg:${a.color}` : undefined}>
+              {photo ? (
+                <Image
+                  class="tile-img"
+                  src={photo}
+                  alt=""
+                  widths={big ? [400, 800] : [240, 400]}
+                  sizes={big ? '(min-width: 840px) 40rem, 100vw' : '(min-width: 840px) 20rem, 50vw'}
+                  loading="lazy"
+                />
+              ) : (
+                <span class="tile-mono" aria-hidden="true">
+                  {monogram(a.name)}
+                </span>
+              )}
+              <p class="tile-rank">
+                <span aria-hidden="true"><span class="tile-hash">#</span>{rank[i]}</span>
+                <span class="sr-only">{tied[i] ? `Tied for number ${rank[i]}` : `Number ${rank[i]}`}</span>
+              </p>
+              <div class="tile-text">
+                <h3 class="tile-name">
+                  <a href={a.setlistUrl} rel="noopener">
+                    {a.name}
+                  </a>
+                </h3>
+                <p class="tile-meta">
+                  <strong>{a.count} shows</strong><span class="tile-years">{span(a.firstSeen, a.lastSeen)}</span>
+                </p>
+                <span class="tile-bar" style={`--pct:${(a.count / max) * 100}%`} aria-hidden="true" />
+              </div>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </section>
+
+  <p class="credits">
+    Show history from <a href="https://www.setlist.fm/user/dmcnamara1" rel="noopener">setlist.fm</a>. Artist photos
+    and links from <a href="https://www.deezer.com" rel="noopener">Deezer</a>. Updated {formatLong(updatedAt)}.
+  </p>
+</Base>
+
+<style>
+  p {
+    margin: 0;
+  }
+
+  /* ---- Header ---- */
+  .head h1 {
+    font: var(--md-sys-typescale-display-small);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin-top: var(--space-3);
+    font: var(--md-sys-typescale-title-medium);
+    font-weight: 400;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+  .stats strong {
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .block {
+    margin-top: var(--space-12);
+  }
+  .block > h2 {
+    margin-bottom: var(--space-4);
+    font: var(--md-sys-typescale-title-large);
+  }
+
+  /* ---- Most seen: photo tiles, the leaders twice the size ---- */
+  .top {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 840px) {
+    .top {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+  }
+  .tile {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--md-sys-shape-corner-large);
+    background: var(--tile-bg, var(--md-sys-color-surface-container));
+    color: #fff;
+    isolation: isolate;
+  }
+  .tile--big {
+    grid-column: span 2;
+    grid-row: span 2;
+    border-radius: var(--md-sys-shape-corner-extra-large);
+  }
+  /* The rank tab fills this corner; squaring it avoids an anti-aliased arc showing through */
+  .tile,
+  .tile--big {
+    border-top-left-radius: 0;
+  }
+  .tile-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .tile-mono {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font: 900 3rem/1 var(--font-ui);
+    color: rgb(255 255 255 / 0.85);
+  }
+  /* Scrim keeps the white text ≥ 4.5:1 over any photo */
+  .tile::after {
+    content: '';
+    position: absolute;
+    inset: 40% 0 0;
+    z-index: 0;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.82), rgb(0 0 0 / 0.55) 45%, transparent);
+    pointer-events: none;
+  }
+  /*
+   * Chart position: a tab cut out of the tile's corner in the page surface color,
+   * so the number reads on any photo. The two pseudo-elements draw the concave corners.
+   */
+  .tile-rank {
+    --r: var(--md-sys-shape-corner-large);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    margin: 0;
+    padding: var(--space-2) var(--space-3) var(--space-2) var(--space-3);
+    border-bottom-right-radius: var(--r);
+    background: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font: 900 1.75rem/1 var(--font-ui);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .tile-rank::before,
+  .tile-rank::after {
+    content: '';
+    position: absolute;
+    width: var(--r);
+    height: var(--r);
+    background: radial-gradient(circle at 100% 100%, transparent var(--r), var(--md-sys-color-surface) calc(var(--r) + 0.5px));
+  }
+  .tile-rank::before {
+    top: 0;
+    left: 100%;
+  }
+  .tile-rank::after {
+    top: 100%;
+    left: 0;
+  }
+  .tile-hash {
+    margin-right: 0.04em;
+    font-size: 0.5em;
+    font-weight: 700;
+    vertical-align: 0.72em;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .tile-text {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 1;
+    padding: var(--space-3) var(--space-3) var(--space-4);
+  }
+  .tile-name {
+    font: var(--md-sys-typescale-title-medium);
+    font-weight: 600;
+  }
+  .tile-name a {
+    color: inherit;
+    text-decoration: none;
+  }
+  /* The whole tile is the link's hit area, with an M3 state layer (8% hover, 10% pressed) */
+  .tile-name a::before {
+    content: '';
+    position: absolute;
+    inset: -100vmax;
+    background: #fff;
+    opacity: 0;
+    transition: opacity 150ms linear;
+  }
+  .tile-name a:hover::before {
+    opacity: 0.08;
+  }
+  .tile-name a:active::before {
+    opacity: 0.1;
+  }
+  .tile-name a:focus-visible {
+    outline: none;
+  }
+  .tile:has(a:focus-visible) {
+    outline: 3px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+  }
+  .tile-meta {
+    margin-top: 2px;
+    font: var(--md-sys-typescale-body-medium);
+    color: rgb(255 255 255 / 0.85);
+  }
+  .tile-meta strong {
+    color: #fff;
+    font-weight: 600;
+  }
+  .tile-years::before {
+    content: ', ';
+  }
+  .tile-bar {
+    display: block;
+    height: 4px;
+    margin-top: var(--space-2);
+    border-radius: 2px;
+    background: linear-gradient(#fff, #fff) 0 0 / var(--pct) 100% no-repeat, rgb(255 255 255 / 0.25);
+  }
+  .tile--big .tile-text {
+    padding: var(--space-6);
+  }
+  .tile--big .tile-rank {
+    --r: var(--md-sys-shape-corner-extra-large);
+    padding: var(--space-3) var(--space-4) var(--space-3) var(--space-4);
+    font-size: 2.75rem;
+  }
+  .tile--big .tile-name {
+    font: var(--md-sys-typescale-headline-small);
+    font-weight: 600;
+  }
+  @media (min-width: 840px) {
+    .tile--big .tile-name {
+      font: 900 2.5rem/1.1 var(--font-ui);
+      letter-spacing: -0.02em;
+    }
+    .tile--big .tile-meta {
+      font: var(--md-sys-typescale-title-medium);
+      font-weight: 400;
+    }
+  }
+
+  /* ---- Recently seen: one ticket per show ---- */
+  .tickets {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 840px) {
+    .tickets {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ticket {
+      --stub: 5.5rem;
+    }
+  }
+  .ticket {
+    --notch: 10px;
+    --stub: 4.5rem;
+    display: grid;
+    grid-template-columns: var(--stub) 1fr;
+    /* Half-circle notches where the stub tears off */
+    mask:
+      radial-gradient(circle at var(--stub) 0, transparent var(--notch), #000 calc(var(--notch) + 0.5px)) top / 100% 51% no-repeat,
+      radial-gradient(circle at var(--stub) 100%, transparent var(--notch), #000 calc(var(--notch) + 0.5px)) bottom / 100% 51% no-repeat;
+    border-radius: var(--md-sys-shape-corner-medium);
+    background: var(--md-sys-color-surface-container);
+  }
+  .stub {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4) var(--space-2);
+    border-right: 2px dashed var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    text-align: center;
+  }
+  .stub-month {
+    font: var(--md-sys-typescale-title-small);
+  }
+  .stub-day {
+    font: 900 2.25rem/1 var(--font-ui);
+  }
+  .stub-year {
+    margin-top: var(--space-1);
+    font: var(--md-sys-typescale-label-medium);
+    opacity: 0.8;
+  }
+  .ticket-body {
+    min-width: 0;
+    padding: var(--space-4);
+  }
+  .venue {
+    font: var(--md-sys-typescale-label-large);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+  .acts {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .act {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .act-photo {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    overflow: hidden;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: var(--tile-bg, var(--md-sys-color-secondary-container));
+    font: 900 1.125rem/1 var(--font-ui);
+    color: #fff;
+  }
+  .act-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .act-text {
+    display: grid;
+    min-width: 0;
+  }
+  .act-name {
+    font: var(--md-sys-typescale-title-medium);
+    color: var(--md-sys-color-on-surface);
+    text-decoration: none;
+  }
+  .act-name:hover {
+    text-decoration: underline;
+  }
+  .act-tour {
+    font: var(--md-sys-typescale-body-medium);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+  /* 48dp icon button, 40dp visible */
+  .act-listen {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--md-sys-shape-corner-full);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+  .act-listen::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+  }
+  .act-listen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 150ms linear;
+  }
+  .act-listen:hover::after {
+    opacity: 0.08;
+  }
+  .act-listen svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .credits {
+    margin-top: var(--space-12);
+    font: var(--md-sys-typescale-body-medium);
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  /* Compact windows (kept last so these win over the base rules above) */
+  @media (max-width: 599px) {
+    .ticket {
+      --stub: 4rem;
+    }
+    .ticket-body {
+      padding: var(--space-3);
+    }
+    .act {
+      grid-template-columns: 44px 1fr auto;
+      gap: var(--space-2);
+    }
+    .act-photo {
+      width: 44px;
+      height: 44px;
+      font-size: 0.9375rem;
+    }
+    /* Small tiles: count and years on their own lines instead of a ragged wrap */
+    .tile:not(.tile--big) .tile-years {
+      display: block;
+    }
+    .tile:not(.tile--big) .tile-years::before {
+      content: none;
+    }
+    .tile:not(.tile--big) .tile-rank {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tile-name a::before,
+    .act-listen::after {
+      transition: none;
+    }
+  }
+</style>

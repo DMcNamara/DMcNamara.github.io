@@ -14,6 +14,7 @@ const hasHero = Astro.slots.has('hero');
 const nav = [
   { href: '/', label: 'About' },
   { href: '/resume', label: 'Resume' },
+  { href: '/concerts', label: 'Shows' },
 ];
 ---
 
@@ -150,6 +151,24 @@ const nav = [
   nav a[aria-current='page']::before {
     background: var(--md-sys-color-secondary-container);
     opacity: 1;
+  }
+  .brand {
+    white-space: nowrap;
+  }
+  /* Small phones: three nav links plus the name need a tighter bar */
+  @media (max-width: 479px) {
+    .app-bar-inner {
+      gap: var(--space-2);
+    }
+    .brand {
+      font: var(--md-sys-typescale-title-medium);
+    }
+    nav {
+      gap: 0;
+    }
+    nav a {
+      padding: 0 10px;
+    }
   }
   main {
     padding-block: var(--space-12) var(--space-16);

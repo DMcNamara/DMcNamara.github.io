@@ -8,7 +8,7 @@
  * 2. Edit REPO below if your repo name differs.
  * 3. Reload the doc and use the new Website menu. Authorize on first run.
  */
-const REPO = 'DMcNamara/DMcNamara.github.io';
+const REPO = 'DMcNamara/personal-site';
 
 function onOpen() {
   DocumentApp.getUi()

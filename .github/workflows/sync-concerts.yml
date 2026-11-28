@@ -1,0 +1,51 @@
+name: Sync concerts from setlist.fm
+
+on:
+  workflow_dispatch:
+  # Weekly, Mondays 12:47 UTC
+  schedule:
+    - cron: '47 12 * * 1'
+
+permissions:
+  contents: write
+  actions: write # to start the deploy (pushes made with GITHUB_TOKEN don't trigger workflows)
+
+concurrency:
+  group: sync-concerts
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+
+      - name: Sync concerts
+        run: npm run sync:concerts
+        env:
+          SETLISTFM_API_KEY: ${{ secrets.SETLISTFM_API_KEY }}
+          SETLISTFM_USER: ${{ vars.SETLISTFM_USER }}
+
+      - name: Run checks on the new data
+        run: npm test
+
+      # The data is deterministic (no LLM step), so it's committed straight to main.
+      - name: Commit and deploy if anything changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add src/data/concerts.json src/assets/artists
+          if git diff --cached --quiet; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: sync concerts from setlist.fm'
+          git push
+          gh workflow run deploy.yml --ref main

@@ -11,7 +11,8 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "sync:resume": "tsx scripts/sync-resume.ts",
-    "test": "tsx --test scripts/lib/sync.test.ts"
+    "test": "tsx --test scripts/lib/sync.test.ts scripts/lib/concerts.test.ts",
+    "sync:concerts": "tsx scripts/sync-concerts.ts"
   },
   "dependencies": {
     "astro": "^7.4.13",
@@ -22,6 +23,7 @@
     "@google/genai": "^1.30.0",
     "@types/node": "^26.0.0",
     "googleapis": "^166.0.0",
+    "sharp": "^0.35.5",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0"
   }
